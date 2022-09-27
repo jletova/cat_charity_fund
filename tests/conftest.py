@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
+
 try:
     from app.main import app
 except (NameError, ImportError):
@@ -15,6 +16,7 @@ except (NameError, ImportError):
         'Проверьте и поправьте: он должен быть доступен в модуле `app.main`.',
     )
 
+
 try:
     from app.core.db import Base, get_async_session
 except (NameError, ImportError):
@@ -22,6 +24,7 @@ except (NameError, ImportError):
         'Не обнаружены объекты `Base, get_async_session`. '
         'Проверьте и поправьте: они должны быть доступны в модуле `app.core.db`.',
     )
+
 
 try:
     from app.core.user import current_superuser, current_user
