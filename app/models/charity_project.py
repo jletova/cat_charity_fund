@@ -15,10 +15,10 @@ class CharityProject(Base):
     create_date = Column(DateTime, default=datetime.now)
     close_date = Column(DateTime)
 
-    def __repr__(self):
-        return (
-            f'Проект №{self.id}'
-        )
+    # def __repr__(self):
+    #     return (
+    #         f'Проект №{self.id}'
+    #     )
 
     class Config:
         min_anystr_length = 1

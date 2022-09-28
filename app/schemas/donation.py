@@ -13,7 +13,7 @@ class DonationCreate(BaseModel):
 
 class DonationDB(QRKotBaseModel):
     id: int
-    comment: str
+    comment: Optional[str]
     user_id: Optional[int]
 
     class Config:

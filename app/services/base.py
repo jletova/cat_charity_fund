@@ -1,30 +1,34 @@
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.db import get_async_session
+# from app.core.db import get_async_session
 from app.schemas.charity_project import QRKotBaseModel
 
 
 async def invest(
-    project: QRKotBaseModel,
-    in_obj_data: dict,
+    new_object: QRKotBaseModel,
+    projects_to_invest: list[QRKotBaseModel],
     session: AsyncSession,
-) -> dict:
-    data_to_update = {}
-    need_amount = project.full_amount - project.invested_amount
-    donate = in_obj_data['full_amount'] - in_obj_data.get('invested_amount', 0)
-    if need_amount > donate:
-        data_to_update['invested_amount'] = project.invested_amount + donate
-        in_obj_data['invested_amount'] = in_obj_data['full_amount']
-        in_obj_data['fully_invested'] = True
-        in_obj_data['close_date'] = datetime.now()
-    else:
-        in_obj_data['invested_amount'] = in_obj_data.get('invested_amount', 0) + need_amount
-        data_to_update['fully_invested'] = True
-        data_to_update['close_date'] = datetime.now()
-        data_to_update['invested_amount'] = project.full_amount
+) -> QRKotBaseModel:
 
-    for field in data_to_update:
-        setattr(project, field, data_to_update[field])
-    session.add(project)
-    return in_obj_data
+    for project_to_invest in projects_to_invest:
+        project_to_invest = project_to_invest[0]
+        need_amount = new_object.full_amount - new_object.invested_amount
+        donate = project_to_invest.full_amount - project_to_invest.invested_amount
+        if need_amount >= donate:
+            new_object.invested_amount = new_object.invested_amount + donate
+            project_to_invest.invested_amount = project_to_invest.full_amount
+            project_to_invest.fully_invested = True
+            project_to_invest.close_date = datetime.now()
+        else:
+            project_to_invest.invested_amount = project_to_invest.invested_amount + need_amount
+            new_object.fully_invested = True
+            new_object.close_date = datetime.now()
+            new_object.invested_amount = new_object.full_amount
+        session.add(project_to_invest)
+        session.add(new_object)
+        if new_object.fully_invested:
+            break
+    # await session.commit()
+    # await session.refresh(new_object)
+    return new_object

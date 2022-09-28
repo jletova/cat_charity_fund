@@ -25,19 +25,16 @@ router = APIRouter()
 async def create_new_charity_project(
         charity_project: CharityProjectCreate,
         session: AsyncSession = Depends(get_async_session),
-):
-    """Только для суперюзеров."""
+) -> CharityProjectDB:
+    """Only for superuser."""
     await check_name_duplicate(charity_project.name, session)
-    projects = await donations_crud.get_by_attribute('fully_invested', 0, session)
-    if projects:
-        donation_data = jsonable_encoder(charity_project)
-        for project in projects:
-            project = project[0]
-            donation_data = await invest(project, donation_data, session)
-            if donation_data['invested_amount'] == charity_project.full_amount:
-                break
-    new_project = await projects_crud.create(donation_data, session)
-    return new_project
+    new_object = await projects_crud.create(charity_project, session)
+    objects_to_invest = await donations_crud.get_by_attribute('fully_invested', 0, session)
+    if objects_to_invest:
+        new_object = await invest(new_object, objects_to_invest, session)
+    await session.commit()
+    await session.refresh(new_object)
+    return new_object
 
 
 @router.patch(
@@ -83,7 +80,6 @@ async def remove_charity_project(
     charity_project = await check_project_exist(
         project_id, session
     )
-    # check_before_edit
     if charity_project.invested_amount or charity_project.fully_invested:
         raise HTTPException(
             status_code=400,
