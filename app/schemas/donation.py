@@ -1,11 +1,11 @@
 from typing import Optional
 from app.schemas.charity_project import QRKotBaseModel
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel, Extra, PositiveInt
 
 
 class DonationCreate(BaseModel):
-    full_amount: int
-    comment: str
+    full_amount: PositiveInt
+    comment: Optional[str]
 
     class Config:
         extra = Extra.forbid

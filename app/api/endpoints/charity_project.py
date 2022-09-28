@@ -57,14 +57,26 @@ async def partially_update_charity_project(
         )
     if obj_in.name:
         await check_name_duplicate(obj_in.name, session)
-    if obj_in.full_amount and obj_in.full_amount < charity_project.invested_amount:
+    if obj_in.name is None or obj_in.name == '':
+        obj_in.name = charity_project.name
+    if obj_in.full_amount and (obj_in.full_amount < charity_project.invested_amount or obj_in.full_amount is None):
         raise HTTPException(
             status_code=404,
             detail='Сумма должна быть больше уже внесенной.'
         )
+    if obj_in.description and obj_in.description is None:
+        raise HTTPException(
+            status_code=400,
+            detail='Описание не может быть пустым.'
+        )
     charity_project = await projects_crud.update(
         charity_project, obj_in, session
     )
+    donations = await donations_crud.get_by_attribute('fully_invested', 0, session)
+    if donations:
+        charity_project = await invest(charity_project, donations, session)
+    await session.commit()
+    await session.refresh(charity_project)
     return charity_project
 
 

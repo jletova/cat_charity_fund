@@ -23,24 +23,22 @@ class QRKotBaseModel(BaseModel):
 
 
 class CharityProjectCreate(BaseModel):
-    name: str = Field(..., min_length=1, max_length=100)
+    name: str = Field(..., max_length=100)
     description: str
     full_amount: PositiveInt
 
+    class Config:
+        min_anystr_length = 1
+
 
 class CharityProjectUpdate(BaseModel):
-    name: Optional[str] = Field(..., min_length=1, max_length=100)
+    name: Optional[str] = Field(..., max_length=100)
     description: Optional[str]
     full_amount: Optional[PositiveInt]
 
     class Config:
         extra = Extra.forbid
-
-    @validator('name')
-    def name_cannot_be_null(cls, value):
-        if value is None:
-            raise ValueError('Название проекта не может быть пустым!')
-        return value
+        min_anystr_length = 1
 
 
 class CharityProjectDB(QRKotBaseModel):

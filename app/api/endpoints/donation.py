@@ -18,6 +18,7 @@ router = APIRouter()
 @router.post(
     '/',
     response_model=DonationDB,
+    response_model_exclude_none=True,
     response_model_exclude={
         'user_id', 'invested_amount', 'fully_invested', 'close_date'
     },
@@ -33,15 +34,6 @@ async def create_donation(
     projects = await projects_crud.get_by_attribute('fully_invested', 0, session)
     if projects:
         new_donation = await invest(new_donation, projects, session)
-    #     donation_data = jsonable_encoder(donation)
-    #     for project in projects:
-    #         project = project[0]
-    #         donation_data = await invest(project, donation_data, session)
-    #         if donation_data['invested_amount'] == donation.full_amount:
-    #             break
-    # new_donation = await donations_crud.create(
-    #     donation_data, session, user
-    # )
     await session.commit()
     await session.refresh(new_donation)
     return new_donation
