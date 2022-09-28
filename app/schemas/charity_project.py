@@ -1,20 +1,10 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import (BaseModel, Extra, Field, PositiveInt,
-                      NonNegativeInt, validator)
-
-
-# class QRKotBaseModel(BaseModel):
-#     full_amount: Optional[int] = Field(..., gt=0)
-#     invested_amount: Optional[int] = 0
-#     fully_invested: Optional[bool] = False
-#     create_date: Optional[datetime] = datetime.now()
-#     close_date: Optional[datetime]
+from pydantic import BaseModel, Extra, Field, NonNegativeInt, PositiveInt
 
 
 class QRKotBaseModel(BaseModel):
-    __abstract__ = True
     full_amount: Optional[PositiveInt]
     invested_amount: Optional[NonNegativeInt] = 0
     fully_invested: Optional[bool] = False
@@ -32,7 +22,7 @@ class CharityProjectCreate(BaseModel):
 
 
 class CharityProjectUpdate(BaseModel):
-    name: Optional[str] = Field(..., max_length=100)
+    name: Optional[str]
     description: Optional[str]
     full_amount: Optional[PositiveInt]
 
@@ -43,8 +33,8 @@ class CharityProjectUpdate(BaseModel):
 
 class CharityProjectDB(QRKotBaseModel):
     id: int
-    name: str = Field(..., min_length=1, max_length=100)
-    description: str
+    name: Optional[str]
+    description: Optional[str]
 
     class Config:
         orm_mode = True

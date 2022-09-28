@@ -1,6 +1,8 @@
 from typing import Optional
-from app.schemas.charity_project import QRKotBaseModel
+
 from pydantic import BaseModel, Extra, PositiveInt
+
+from app.schemas.charity_project import QRKotBaseModel
 
 
 class DonationCreate(BaseModel):

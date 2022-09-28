@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.encoders import jsonable_encoder
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.user import current_superuser
@@ -46,37 +45,29 @@ async def partially_update_charity_project(
         project_id: int,
         obj_in: CharityProjectUpdate,
         session: AsyncSession = Depends(get_async_session),
-):
+) -> CharityProjectDB:
     charity_project = await check_project_exist(
         project_id, session
     )
-    if charity_project.fully_invested:
+    if charity_project.fully_invested is True:
         raise HTTPException(
             status_code=400,
-            detail='Нельзя менять закрытый проект.'
+            detail='Закрытый проект нельзя редактировать!'
         )
     if obj_in.name:
         await check_name_duplicate(obj_in.name, session)
-    if obj_in.name is None or obj_in.name == '':
-        obj_in.name = charity_project.name
-    if obj_in.full_amount and (obj_in.full_amount < charity_project.invested_amount or obj_in.full_amount is None):
+    if obj_in.full_amount and obj_in.full_amount < charity_project.invested_amount:
         raise HTTPException(
             status_code=404,
             detail='Сумма должна быть больше уже внесенной.'
         )
-    if obj_in.description and obj_in.description is None:
-        raise HTTPException(
-            status_code=400,
-            detail='Описание не может быть пустым.'
-        )
+    elif obj_in.full_amount and obj_in.full_amount > charity_project.invested_amount:
+        donations = await donations_crud.get_by_attribute('fully_invested', 0, session)
+        if donations:
+            charity_project = await invest(charity_project, donations, session)
     charity_project = await projects_crud.update(
         charity_project, obj_in, session
     )
-    donations = await donations_crud.get_by_attribute('fully_invested', 0, session)
-    if donations:
-        charity_project = await invest(charity_project, donations, session)
-    await session.commit()
-    await session.refresh(charity_project)
     return charity_project
 
 

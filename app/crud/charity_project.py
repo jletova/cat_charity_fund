@@ -9,16 +9,6 @@ from app.models.charity_project import CharityProject
 
 class CRUDCharityProject(CRUDBase):
 
-    # async def get_projects_to_invest(
-    #         self,
-    #         session: AsyncSession,
-    # ) -> CharityProject:
-    #     projects_to_invest = await session.execute(
-    #         select(CharityProject).where(
-    #             CharityProject.fully_invested == 0)
-    #     )
-    #     return projects_to_invest
-
     async def get_project_id_by_name(
             self,
             room_name: str,

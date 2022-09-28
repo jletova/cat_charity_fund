@@ -1,7 +1,6 @@
-from sqlalchemy import (Column, String, Text,
-                        Integer, DateTime, Boolean)
-# from sqlalchemy.orm import relationship
 from datetime import datetime
+
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
 
 from app.core.db import Base
 
@@ -15,10 +14,10 @@ class CharityProject(Base):
     create_date = Column(DateTime, default=datetime.now)
     close_date = Column(DateTime)
 
-    # def __repr__(self):
-    #     return (
-    #         f'Проект №{self.id}'
-    #     )
-
     class Config:
         min_anystr_length = 1
+
+    def __repr__(self):
+        return (
+            f'Project №{self.id}'
+        )
