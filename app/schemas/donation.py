@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Extra, PositiveInt
 
-from app.schemas.charity_project import QRKotBaseModel
+from app.schemas.charity_project import SchemaBaseModel
 
 
 class DonationCreate(BaseModel):
@@ -13,7 +13,7 @@ class DonationCreate(BaseModel):
         extra = Extra.forbid
 
 
-class DonationDB(QRKotBaseModel):
+class DonationDB(SchemaBaseModel):
     id: int
     comment: Optional[str]
     user_id: Optional[int]

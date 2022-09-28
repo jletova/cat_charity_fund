@@ -1,18 +1,11 @@
-from datetime import datetime
+from sqlalchemy import Column, ForeignKey, Integer, String
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
-
-from app.core.db import Base
+from app.models.base_model import ProjectBaseModel
 
 
-class Donation(Base):
+class Donation(ProjectBaseModel):
     user_id = Column(Integer, ForeignKey('user.id'))
     comment = Column(String)
-    full_amount = Column(Integer)
-    invested_amount = Column(Integer, default=0)
-    fully_invested = Column(Boolean, default=False)
-    create_date = Column(DateTime, default=datetime.now)
-    close_date = Column(DateTime)
 
     class Config:
         min_anystr_length = 1

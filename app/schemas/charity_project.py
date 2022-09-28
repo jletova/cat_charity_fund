@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, Extra, Field, NonNegativeInt, PositiveInt
 
 
-class QRKotBaseModel(BaseModel):
+class SchemaBaseModel(BaseModel):
     full_amount: Optional[PositiveInt]
     invested_amount: Optional[NonNegativeInt] = 0
     fully_invested: Optional[bool] = False
@@ -31,7 +31,7 @@ class CharityProjectUpdate(BaseModel):
         min_anystr_length = 1
 
 
-class CharityProjectDB(QRKotBaseModel):
+class CharityProjectDB(SchemaBaseModel):
     id: int
     name: Optional[str]
     description: Optional[str]
