@@ -61,10 +61,6 @@ async def partially_update_charity_project(
             status_code=404,
             detail='Сумма должна быть больше уже внесенной.'
         )
-    elif obj_in.full_amount and obj_in.full_amount > charity_project.invested_amount:
-        donations = await donations_crud.get_by_attribute('fully_invested', 0, session)
-        if donations:
-            charity_project = await invest(charity_project, donations, session)
     charity_project = await projects_crud.update(
         charity_project, obj_in, session
     )
