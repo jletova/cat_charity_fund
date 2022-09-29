@@ -31,8 +31,6 @@ async def create_new_charity_project(
     objects_to_invest = await donations_crud.get_by_attribute('fully_invested', 0, session)
     if objects_to_invest:
         new_object = await invest(new_object, objects_to_invest, session)
-    await session.commit()
-    await session.refresh(new_object)
     return new_object
 
 
@@ -49,7 +47,7 @@ async def partially_update_charity_project(
     charity_project = await check_project_exist(
         project_id, session
     )
-    if charity_project.fully_invested is True:
+    if charity_project.fully_invested:
         raise HTTPException(
             status_code=400,
             detail='Закрытый проект нельзя редактировать!'
